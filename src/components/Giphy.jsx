@@ -71,7 +71,7 @@ const Giphy = () => {
     try {
       const results = await axios("https://api.giphy.com/v1/gifs/search", {
         params: {
-          api_key: "tAEFUgagRjRNkU24orQdFB8EHMcNTUSe",
+          api_key: process.env.REACT_APP_API_KEY,
           q: search,
           limit: 100,
         },
@@ -84,10 +84,6 @@ const Giphy = () => {
 
     setIsLoading(false);
   };
-
-  //   const pageSelected = (pageNumber) => {
-  //     setCurrentPage(pageNumber);
-  //   };
 
   return (
     <div className="m-2">
