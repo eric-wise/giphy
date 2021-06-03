@@ -1,5 +1,7 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+import Paginate from "./Paginate";
 import Loading from "./Loading";
 
 const Giphy = () => {
@@ -7,6 +9,12 @@ const Giphy = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,6 +25,7 @@ const Giphy = () => {
         const results = await axios("https://api.giphy.com/v1/gifs/trending", {
           params: {
             api_key: process.env.REACT_APP_API_KEY,
+            limit: 100,
           },
         });
 
@@ -37,7 +46,7 @@ const Giphy = () => {
     if (isLoading) {
       return <Loading />;
     }
-    return data.map((el) => {
+    return currentItems.map((el) => {
       return (
         <div key={el.id} className="gif">
           <img src={el.images.fixed_height.url} />
@@ -45,7 +54,6 @@ const Giphy = () => {
       );
     });
   };
-
   const renderError = () => {
     if (isError) {
       return (
@@ -85,6 +93,10 @@ const Giphy = () => {
     setIsLoading(false);
   };
 
+  const pageSelected = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="m-2">
       {renderError()}
@@ -104,7 +116,12 @@ const Giphy = () => {
           Go
         </button>
       </form>
-
+      <Paginate
+        pageSelected={pageSelected}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        totalItems={data.length}
+      />
       <div className="container gifs">{renderGifs()}</div>
     </div>
   );
